@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
-const ValidationError = require('../errors/ValidationError');
 const ConflictErrors = require('../errors/ConflictErrors');
+const { errorMessages } = require('../utils/constants');
 
 const { JWT_SECRET_KEY = 'dev' } = process.env;
 
@@ -33,33 +33,34 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictErrors('Пользователь с таким EMAIL уже зарегистрирован'));
+        next(new ConflictErrors(errorMessages.emailError));
       }
       next(err);
     });
-};
-
-module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        next(new NotFoundError('Пользователь с указанным ID не найден'));
-      }
-      return res.send(user);
-    })
-    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
   const { name, email } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, email }, { runValidators: true })
-    .then((user) => res.send({ _id: user._id, name, email }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
+  const findForModify = () => User.findByIdAndUpdate(
+    req.user._id,
+    { name, email },
+    { runValidators: true },
+  );
+
+  User.find({ email })
+    .then(([user]) => {
+      if (user && user._id !== req.user._id) {
+        throw new ConflictErrors(errorMessages.emailError);
       }
-      next(err);
-    });
+      return findForModify();
+    })
+    .then(() => {
+      res.send({
+        name,
+        email,
+      });
+    })
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {
@@ -84,7 +85,7 @@ module.exports.getMe = (req, res, next) => {
   User.find({ _id })
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Указанный пользователь не найден'));
+        next(new NotFoundError(errorMessages.userNotFoundError));
       }
       return res.send(...user);
     })

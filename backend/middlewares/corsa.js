@@ -1,6 +1,5 @@
 const { allowedCors } = require('../utils/constants');
 
-// eslint-disable-next-line func-names
 module.exports = (function (req, res, next) {
   const { origin } = req.headers;
   if (allowedCors.includes(origin)) {

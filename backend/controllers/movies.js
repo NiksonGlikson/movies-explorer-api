@@ -1,8 +1,9 @@
-const movies = require('../models/movie');
+const Movie = require('../models/movie');
 
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const ValidationError = require('../errors/ValidationError');
+const { errorMessages } = require('../utils/constants');
 
 module.exports.createMovie = (req, res, next) => {
   const {
@@ -20,7 +21,7 @@ module.exports.createMovie = (req, res, next) => {
   } = req.body;
 
   const owner = req.user._id;
-  movies.create({
+  Movie.create({
     country,
     director,
     duration,
@@ -37,7 +38,7 @@ module.exports.createMovie = (req, res, next) => {
     .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new ValidationError(errorMessages.dataError));
       } else {
         next(err);
       }
@@ -45,20 +46,19 @@ module.exports.createMovie = (req, res, next) => {
 };
 
 module.exports.getMovies = (req, res, next) => {
-  movies.find({})
+  Movie.find({})
     .then((movie) => res.send(movie))
     .catch(next);
 };
 
 module.exports.deleteMovie = (req, res, next) => {
-  movies.findById(req.params.movieId)
-    .orFail()
-    .catch(() => new NotFoundError('Фильм не найден'))
+  Movie.findById(req.params.movieId)
+    .orFail(new NotFoundError(errorMessages.movieNotFoundError))
     .then((movie) => {
       if (req.user._id !== movie.owner.toString()) {
-        throw new ForbiddenError('Вы не можете удалить этот фильм');
+        throw new ForbiddenError(errorMessages.movieDeleteError);
       }
-      movie.findByIdAndDelete(req.params.movieId)
+      Movie.findByIdAndDelete(req.params.movieId)
         .then((movieData) => {
           res.send({ data: movieData });
         })

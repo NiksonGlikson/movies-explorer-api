@@ -10,4 +10,17 @@ const allowedCors = [
   'http://movie.explorer.glinkin.nomoredomains.sbs',
 ];
 
-module.exports = { allowedCors };
+const errorMessages = {
+  urlError: 'Не является URL адресом',
+  dataError: 'Переданы некорректные данные',
+  movieNotFoundError: 'Фильм не найден',
+  movieDeleteError: 'Вы не можете удалить этот фильм',
+  userNotFoundError: 'Указанный пользователь не найден',
+  emailError: 'Пользователь с таким EMAIL уже зарегистрирован',
+  authorizationError: 'Ошибка авторизации',
+  loginError: 'Неправильные почта или пароль',
+  wrongPathError: 'По указанному пути ничего нет',
+  crashTest: 'Сервет сейчас упадет',
+};
+
+module.exports = { allowedCors, errorMessages };
