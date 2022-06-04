@@ -20,23 +20,23 @@ module.exports.validateCreateMovie = celebrate({
       if (validator.isURL(value)) {
         return value;
       }
-      return helpers.messages(errorMessages.urlError);
+      return helpers.message(errorMessages.urlError);
     }),
     trailerLink: Joi.string().required().custom((value, helpers) => {
       if (validator.isURL(value)) {
         return value;
       }
-      return helpers.messages(errorMessages.urlError);
+      return helpers.message(errorMessages.urlError);
     }),
     thumbnail: Joi.string().required().custom((value, helpers) => {
       if (validator.isURL(value)) {
         return value;
       }
-      return helpers.messages(errorMessages.urlError);
+      return helpers.message(errorMessages.urlError);
     }),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
-    movieId: Joi.number().required(),
+    movieId: Joi.number().integer().required(),
   }),
 });
 

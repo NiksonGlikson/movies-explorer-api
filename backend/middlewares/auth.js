@@ -4,7 +4,6 @@ const { errorMessages } = require('../utils/constants');
 
 const { JWT_SECRET_KEY = 'dev' } = process.env;
 
-// eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
   const cookieAuthorization = req.cookies.jwt;
   if (!cookieAuthorization) {
