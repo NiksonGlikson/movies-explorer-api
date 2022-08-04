@@ -19,7 +19,7 @@ app.use(helmet());
 
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/moviesdb', { family: 4 }, {
+mongoose.connect('mongodb://127.0.0.1:27017/moviesdb', {
   useNewUrlParser: true,
 });
 
@@ -28,10 +28,9 @@ const corsa = require('./middlewares/corsa');
 const rateLimited = require('./middlewares/rateLimited');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { errorMessages } = require('./utils/constants');
+const CatcherError = require('./errors/CatcherError');
 
 app.use(corsa);
-
-const CatcherError = require('./errors/CatcherError');
 
 app.use(requestLogger);
 
