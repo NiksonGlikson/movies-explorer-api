@@ -93,5 +93,6 @@ module.exports.getMe = (req, res, next) => {
 
 module.exports.signOut = (req, res) => {
   res.clearCookie('jwt');
+  res.cookie('jwt', '');
   res.send({ message: 'Вы вышли из системы' });
 };
